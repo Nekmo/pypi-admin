@@ -2,7 +2,7 @@ import click
 from bs4 import BeautifulSoup
 
 from pypi_client.exceptions import PypiTokenUnavailable
-from pypi_client.session import PypiSession
+from click_default_group import DefaultGroup
 
 
 class Token:
@@ -68,7 +68,7 @@ class Tokens:
         }, original_path='/manage/account/')
 
 
-@click.group()
+@click.group(cls=DefaultGroup, default='all', default_if_no_args=True)
 @click.pass_context
 def tokens(ctx):
     """
