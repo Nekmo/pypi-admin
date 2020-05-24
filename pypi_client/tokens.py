@@ -69,7 +69,7 @@ class Tokens:
             'description': name,
             'token_scope': scope,
         })
-        soup = BeautifulSoup(response.text)
+        soup = BeautifulSoup(response.text, 'html.parser')
         provisioned = soup.find('section', id='provisioned-key')
         code = provisioned.find('code', class_='code-block')
         token_id = provisioned.find('input', attrs={'name': 'macaroon_id'}).attrs['value']
@@ -123,6 +123,7 @@ def create_token(ctx, name, scope=''):
 
 @tokens_cli.command('delete')
 @click.argument('name_or_id')
+@click.pass_context
 def delete_token(ctx, name_or_id):
     tokens: Tokens = ctx.obj['tokens']
     token = tokens.get(name_or_id)
