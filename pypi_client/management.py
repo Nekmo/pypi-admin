@@ -21,13 +21,7 @@ ENV_USERNAME_KEY = 'PYPI_USERNAME'
 ENV_PASSWORD_KEY = 'PYPI_PASSWORD'
 
 
-@click.group()
-@click.option('--debug/--no-debug', default=None)
-@click.option('-c', '--config-file', default="~/.pypirc")
-@click.option('-u', '--username', default=None)
-@click.option('-p', '--password', default=None)
-@click.pass_context
-def cli(ctx, debug, config_file, username, password):
+def get_credentials(username: str, password: str, config_file: str):
     if not username and not password:
         username, password = os.environ.get(ENV_USERNAME_KEY), os.environ.get(ENV_PASSWORD_KEY)
     if not username or not password:
@@ -39,25 +33,43 @@ def cli(ctx, debug, config_file, username, password):
             f' * {ENV_USERNAME_KEY} / {ENV_PASSWORD_KEY} environment names\n'
             ' * ~/.pypi file (configure path using -c)\n'
         )
-    if sys.argv[-1] in ctx.help_option_names:
-        return
-    session = PypiSession(username, password)
+
+
+def session_login(session: PypiSession):
+    try:
+        session.login()
+    except PypiTwoFactorRequired:
+        totp_value = click.prompt('Enter TOTP code', type=int)
+        session.two_factor(totp_value)
+    else:
+        assert session.is_authenticated(), "Not authenticated"
+    try:
+        session.save_session()
+    except PypiKeyringError as e:
+        warnings.warn(f'Save session is unavailable: {e}')
+
+
+def session_restore_or_login(session: PypiSession):
     try:
         session.restore_session()
     except PypiKeyringError as e:
         warnings.warn(f'Restore session is unavailable: {e}')
     if not session.is_authenticated():
-        try:
-            session.login()
-        except PypiTwoFactorRequired:
-            totp_value = click.prompt('Enter TOTP code', type=int)
-            session.two_factor(totp_value)
-        else:
-            assert session.is_authenticated(), "Not authenticated"
-        try:
-            session.save_session()
-        except PypiKeyringError as e:
-            warnings.warn(f'Save session is unavailable: {e}')
+        session_login(session)
+
+
+@click.group()
+@click.option('--debug/--no-debug', default=None)
+@click.option('-c', '--config-file', default="~/.pypirc")
+@click.option('-u', '--username', default=None)
+@click.option('-p', '--password', default=None)
+@click.pass_context
+def cli(ctx, debug, config_file, username, password):
+    username, password = get_credentials(username, password, config_file)
+    if sys.argv[-1] in ctx.help_option_names:
+        return
+    session = PypiSession(username, password)
+    session_restore_or_login(session)
     ctx.obj = {'session': session}
 
 
