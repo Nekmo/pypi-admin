@@ -19,6 +19,10 @@ class PypiClientError(Exception):
         return msg
 
 
+class PypiTokenUnavailable(PypiClientError):
+    pass
+
+
 def catch(fn):
     def wrap(*args, **kwargs):
         try:
