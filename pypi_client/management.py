@@ -6,6 +6,7 @@ import sys
 import click
 from click import ClickException
 
+from pypi_client.collaborators import collaborators_cli
 from pypi_client.projects import projects_cli
 from pypi_client.releases import releases_cli
 from pypi_client.session import PypiSession, get_pypi_login
@@ -43,3 +44,4 @@ def cli(ctx, debug, config_file, username, password):
 cli.add_command(tokens_cli)
 cli.add_command(projects_cli)
 cli.add_command(releases_cli)
+cli.add_command(collaborators_cli)
