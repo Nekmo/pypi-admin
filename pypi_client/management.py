@@ -5,7 +5,7 @@ import sys
 import click
 
 from pypi_client.session import PypiSession
-from pypi_client.tokens import tokens
+from pypi_client.tokens import tokens_cli
 
 
 @click.group()
@@ -18,4 +18,4 @@ def cli(ctx, debug):
     ctx.obj = {'session': session}
 
 
-cli.add_command(tokens)
+cli.add_command(tokens_cli)

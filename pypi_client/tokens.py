@@ -1,3 +1,5 @@
+import sys
+
 import click
 from bs4 import BeautifulSoup
 
@@ -70,14 +72,34 @@ class Tokens:
 
 @click.group(cls=DefaultGroup, default='all', default_if_no_args=True)
 @click.pass_context
-def tokens(ctx):
+def tokens_cli(ctx):
     """
     """
     session = ctx.obj['session']
     ctx.obj['tokens'] = Tokens(session)
 
 
-@tokens.command('all')
+@tokens_cli.command('all')
 @click.pass_context
 def all_tokens(ctx, **kwargs):
     print(list(ctx.obj['tokens'].all()))
+
+
+@tokens_cli.command('create')
+@click.argument('name')
+@click.argument('scope', default='')
+@click.pass_context
+def create_token(ctx, name, scope=''):
+    scope = f'scope:project:{scope}' if scope else 'scope:user'
+    tokens: Tokens = ctx.obj['tokens']
+    token: Token = tokens.create(name, scope)
+    if sys.stdout.isatty():
+        click.echo(
+            'For security reasons this token will only appear once:'
+            f'\n\n{token.token}\n\n'
+            f'Use this token to upload {name or "any"} package\n\n'
+            f'Token id: {token.name}\n'
+            f'Token name: {token.token_id}'
+        )
+    else:
+        sys.stdout.write(token.token)
