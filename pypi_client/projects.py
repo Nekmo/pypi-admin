@@ -5,7 +5,8 @@ from pypi_client.table import Table
 
 
 class Project:
-    def __init__(self, title, description, last_released):
+    def __init__(self, projects: 'Projects', title, description, last_released):
+        self.projects = projects
         self.title = title
         self.description = description
         self.last_released = last_released
@@ -22,7 +23,7 @@ class Projects:
             description = next(project.find('p', class_='package-snippet__description').stripped_strings)
             last_released = project.find('time').attrs['datetime']
             yield Project(
-                title, description, last_released
+                self, title, description, last_released
             )
 
 
