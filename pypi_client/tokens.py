@@ -1,4 +1,5 @@
 import sys
+from typing import Iterable, Union
 
 import click
 from bs4 import BeautifulSoup
@@ -38,15 +39,26 @@ class Tokens:
             created = row.find('time').attrs['datetime']
             yield Token(self, name, token_id, created)
 
-    def get_by_name(self, name: str) -> Token:
+    def get(self, name_or_id: str) -> Token:
+        tokens = self.all()
         try:
-            return next(filter(lambda x: x.name == name, self.all()))
+            return self.get_by_token_id(name_or_id, tokens)
+        except PypiTokenUnavailable:
+            pass
+        return self.get_by_name(name_or_id)
+
+
+    def get_by_name(self, name: str, tokens: Union[Iterable[Token], None] = None) -> Token:
+        tokens = tokens or self.all()
+        try:
+            return next(filter(lambda x: x.name == name, tokens))
         except StopIteration:
             raise PypiTokenUnavailable
 
-    def get_by_token_id(self, token_id: str) -> Token:
+    def get_by_token_id(self, token_id: str, tokens: Union[Iterable[Token], None] = None) -> Token:
+        tokens = tokens or self.all()
         try:
-            return next(filter(lambda x: x.token_id == token_id, self.all()))
+            return next(filter(lambda x: x.token_id == token_id, tokens))
         except StopIteration:
             raise PypiTokenUnavailable
 
@@ -103,3 +115,12 @@ def create_token(ctx, name, scope=''):
         )
     else:
         sys.stdout.write(token.token)
+
+
+@tokens_cli.command('delete')
+@click.argument('name_or_id')
+def delete_token(ctx, name_or_id):
+    tokens: Tokens = ctx.obj['tokens']
+    token = tokens.get(name_or_id)
+    token.delete()
+    click.echo(f'Deleted token {token.name} ({token.token_id})')
