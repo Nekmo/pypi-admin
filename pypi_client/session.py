@@ -5,6 +5,8 @@ from typing import Union, Tuple
 from bs4 import BeautifulSoup
 from requests import Session, Response
 
+from pypi_client.exceptions import PypiTwoFactorRequired
+
 URL = 'https://pypi.org/'
 
 
@@ -33,11 +35,25 @@ class PypiSession:
         self.username, self.password = username, password
         self.session = Session()
         self.referrer = URL
+        self._two_factor_soup = None
 
     def login(self):
-        self.form_request('/account/login/', data={
+        response = self.form_request('/account/login/', data={
             'username': self.username,
             'password': self.password,
+        })
+        soup = BeautifulSoup(response.text, 'html.parser')
+        twofa = soup.find('div', class_='twofa-login__method')
+        if twofa:
+            self._two_factor_soup = twofa
+            raise PypiTwoFactorRequired
+
+    def two_factor(self, value):
+        assert self._two_factor_soup is not None, "Login before use two factor"
+        url = self._two_factor_soup.find('form').attrs['action']
+        self._form_request(url, self._two_factor_soup, {
+            'method': 'totp',
+            'totp_value': value,
         })
 
     def request(self, path: str, method: str = 'get', data=None, validate=True) -> Response:
@@ -56,6 +72,13 @@ class PypiSession:
         data = dict(data or {})
         original_path = original_path or path
         soup = self.soup_request(original_path)
+        return self._form_request(path, soup, data)
+
+    def _form_request(self, path, html_or_soup, data):
+        if isinstance(html_or_soup, (str, bytes)):
+            soup = BeautifulSoup(html_or_soup, 'html.parser')
+        else:
+            soup = html_or_soup
         csrf_token = soup.find('input', attrs={"name": "csrf_token"}).attrs['value']
         data['csrf_token'] = csrf_token
         return self.request(path, data=data, method='post')

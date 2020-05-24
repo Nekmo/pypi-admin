@@ -23,6 +23,10 @@ class PypiTokenUnavailable(PypiClientError):
     pass
 
 
+class PypiTwoFactorRequired(PypiClientError):
+    pass
+
+
 def catch(fn):
     def wrap(*args, **kwargs):
         try:

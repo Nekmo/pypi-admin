@@ -8,6 +8,7 @@ from click import ClickException
 
 from pypi_client.collaborators import collaborators_cli
 from pypi_client.events import events_cli
+from pypi_client.exceptions import PypiTwoFactorRequired
 from pypi_client.projects import projects_cli
 from pypi_client.releases import releases_cli
 from pypi_client.session import PypiSession, get_pypi_login
@@ -36,9 +37,14 @@ def cli(ctx, debug, config_file, username, password):
             f' * {ENV_USERNAME_KEY} / {ENV_PASSWORD_KEY} environment names\n'
             ' * ~/.pypi file (configure path using -c)\n'
         )
+    if sys.argv[-1] in ctx.help_option_names:
+        return
     session = PypiSession(username, password)
-    if sys.argv[-1] not in ctx.help_option_names:
+    try:
         session.login()
+    except PypiTwoFactorRequired:
+        totp_value = click.prompt('Enter TOTP code', type=int)
+        session.two_factor(totp_value)
     ctx.obj = {'session': session}
 
 
