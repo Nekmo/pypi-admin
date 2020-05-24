@@ -27,6 +27,10 @@ class PypiTwoFactorRequired(PypiClientError):
     pass
 
 
+class PypiKeyringError(PypiClientError):
+    pass
+
+
 def catch(fn):
     def wrap(*args, **kwargs):
         try:

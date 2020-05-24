@@ -1,13 +1,19 @@
 import configparser
+import json
 import os
+from json import JSONDecodeError
 from typing import Union, Tuple
 
+import keyring
 from bs4 import BeautifulSoup
+from keyring.errors import KeyringError
 from requests import Session, Response
+from requests.cookies import RequestsCookieJar
 
-from pypi_client.exceptions import PypiTwoFactorRequired
+from pypi_client.exceptions import PypiTwoFactorRequired, PypiKeyringError
 
 URL = 'https://pypi.org/'
+KEYRING_SESSION_NAME = 'pypi-client-session'
 
 
 def get_config(path: str = "~/.pypirc"):
@@ -92,6 +98,27 @@ class PypiSession:
     def soup_request(self, path: str, **kwargs) -> BeautifulSoup:
         response = self.request(path, **kwargs)
         return BeautifulSoup(response.text, 'html.parser')
+
+    def save_session(self):
+        cookies = dict(self.session.cookies)
+        try:
+            keyring.set_password(KEYRING_SESSION_NAME, self.username, json.dumps(cookies))
+        except KeyringError as e:
+            raise PypiKeyringError(f'{e}')
+
+    def restore_session(self):
+        cookies = RequestsCookieJar()
+        try:
+            data = keyring.get_password(KEYRING_SESSION_NAME, self.username)
+            if data is None:
+                # Session is not saved
+                return
+            data = json.loads(data)
+        except (KeyringError, JSONDecodeError) as e:
+            raise PypiKeyringError(f'{e}')
+        cookies.update(data)
+        self.session.cookies = cookies
+
 
 if __name__ == '__main__':
     get_config()

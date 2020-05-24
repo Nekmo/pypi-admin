@@ -3,12 +3,14 @@
 """Console script for pypi-client."""
 import os
 import sys
+import warnings
+
 import click
 from click import ClickException
 
 from pypi_client.collaborators import collaborators_cli
 from pypi_client.events import events_cli
-from pypi_client.exceptions import PypiTwoFactorRequired
+from pypi_client.exceptions import PypiTwoFactorRequired, PypiKeyringError
 from pypi_client.projects import projects_cli
 from pypi_client.releases import releases_cli
 from pypi_client.session import PypiSession, get_pypi_login
@@ -41,12 +43,21 @@ def cli(ctx, debug, config_file, username, password):
         return
     session = PypiSession(username, password)
     try:
-        session.login()
-    except PypiTwoFactorRequired:
-        totp_value = click.prompt('Enter TOTP code', type=int)
-        session.two_factor(totp_value)
-    else:
-        assert session.is_authenticated(), "Not authenticated"
+        session.restore_session()
+    except PypiKeyringError as e:
+        warnings.warn(f'Restore session is unavailable: {e}')
+    if not session.is_authenticated():
+        try:
+            session.login()
+        except PypiTwoFactorRequired:
+            totp_value = click.prompt('Enter TOTP code', type=int)
+            session.two_factor(totp_value)
+        else:
+            assert session.is_authenticated(), "Not authenticated"
+        try:
+            session.save_session()
+        except PypiKeyringError as e:
+            warnings.warn(f'Save session is unavailable: {e}')
     ctx.obj = {'session': session}
 
 
