@@ -1,7 +1,6 @@
 
 click>=6.0
 requests
-toml
 beautifulsoup4
 lxml
 click-default-group

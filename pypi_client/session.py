@@ -1,5 +1,6 @@
+import configparser
 import os
-from typing import Union
+from typing import Union, Tuple
 
 from bs4 import BeautifulSoup
 from requests import Session, Response
@@ -7,9 +8,29 @@ from requests import Session, Response
 URL = 'https://pypi.org/'
 
 
+def get_config(path: str = "~/.pypirc"):
+    path = os.path.expanduser(path)
+    parser = configparser.RawConfigParser()
+    if os.path.isfile(path):
+        parser.read(path)
+        return parser
+
+
+def get_pypi_login(path: str = "~/.pypirc") -> Union[Tuple[None, None], Tuple[str, str]]:
+    config = get_config(path)
+    if config is None:
+        return None, None
+    for section_name in ['server-login', 'pypi']:
+        if config.has_option(section_name, "username") and \
+                config.has_option(section_name, "password"):
+            section = config[section_name]
+            return section['username'], section['password']
+    return None, None
+
+
 class PypiSession:
-    def __init__(self):
-        self.username, self.password = os.environ.get('USERNAME'), os.environ.get('PASSWORD')
+    def __init__(self, username: str, password: str):
+        self.username, self.password = username, password
         self.session = Session()
         self.referrer = URL
 
@@ -42,3 +63,6 @@ class PypiSession:
     def soup_request(self, path: str, **kwargs) -> BeautifulSoup:
         response = self.request(path, **kwargs)
         return BeautifulSoup(response.text, 'html.parser')
+
+if __name__ == '__main__':
+    get_config()
