@@ -37,6 +37,10 @@ class PypiSession:
         self.referrer = URL
         self._two_factor_soup = None
 
+    def is_authenticated(self):
+        response = self.request('/manage/account/', options=dict(allow_redirects=False))
+        return not response.is_redirect
+
     def login(self):
         response = self.form_request('/account/login/', data={
             'username': self.username,
@@ -56,13 +60,15 @@ class PypiSession:
             'totp_value': value,
         })
 
-    def request(self, path: str, method: str = 'get', data=None, validate=True) -> Response:
+    def request(self, path: str, method: str = 'get', data=None, validate=True,
+                options=None) -> Response:
+        options = options or {}
         url = '{}/{}'.format(URL.rstrip('/'), path.lstrip('/'))
         headers = {
             'Referer': self.referrer
         }
         self.referrer = url
-        response = self.session.request(method, url, data=data, headers=headers)
+        response = self.session.request(method, url, data=data, headers=headers, **options)
         if validate:
             response.raise_for_status()
         return response

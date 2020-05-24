@@ -45,6 +45,8 @@ def cli(ctx, debug, config_file, username, password):
     except PypiTwoFactorRequired:
         totp_value = click.prompt('Enter TOTP code', type=int)
         session.two_factor(totp_value)
+    else:
+        assert session.is_authenticated(), "Not authenticated"
     ctx.obj = {'session': session}
 
 
