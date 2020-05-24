@@ -33,6 +33,7 @@ def get_credentials(username: str, password: str, config_file: str):
             f' * {ENV_USERNAME_KEY} / {ENV_PASSWORD_KEY} environment names\n'
             ' * ~/.pypi file (configure path using -c)\n'
         )
+    return username, password
 
 
 def session_login(session: PypiSession):
