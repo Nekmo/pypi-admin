@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 from pypi_client.exceptions import PypiTokenUnavailable
 from click_default_group import DefaultGroup
 
+from pypi_client.table import Table
+
 
 class Token:
     def __init__(self, tokens: 'Tokens', name: str, token_id: str, created, token=None):
@@ -82,7 +84,7 @@ class Tokens:
         }, original_path='/manage/account/')
 
 
-@click.group(cls=DefaultGroup, default='all', default_if_no_args=True)
+@click.group(name='tokens', cls=DefaultGroup, default='all', default_if_no_args=True)
 @click.pass_context
 def tokens_cli(ctx):
     """
@@ -94,7 +96,9 @@ def tokens_cli(ctx):
 @tokens_cli.command('all')
 @click.pass_context
 def all_tokens(ctx, **kwargs):
-    print(list(ctx.obj['tokens'].all()))
+    rows = [[token.name, token.token_id, token.created]
+            for token in ctx.obj['tokens'].all()]
+    click.echo(str(Table(['Name', 'Token ID', 'Created'], rows)))
 
 
 @tokens_cli.command('create')
