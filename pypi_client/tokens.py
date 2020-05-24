@@ -1,3 +1,4 @@
+import click
 from bs4 import BeautifulSoup
 
 from pypi_client.exceptions import PypiTokenUnavailable
@@ -15,11 +16,16 @@ class Token:
     def delete(self):
         self.tokens.delete(self.token_id)
 
+    def __repr__(self):
+        return f'<Token "{str(self)}">'
+
+    def __str__(self):
+        return self.name
+
 
 class Tokens:
-    def __init__(self):
-        self.session = PypiSession()
-        self.session.login()
+    def __init__(self, session):
+        self.session = session
 
     def all(self):
         soup = self.session.soup_request('/manage/account/')
@@ -60,3 +66,18 @@ class Tokens:
             'macaroon_id': token_id,
             'confirm_password': self.session.password,
         }, original_path='/manage/account/')
+
+
+@click.group()
+@click.pass_context
+def tokens(ctx):
+    """
+    """
+    session = ctx.obj['session']
+    ctx.obj['tokens'] = Tokens(session)
+
+
+@tokens.command('all')
+@click.pass_context
+def all_tokens(ctx, **kwargs):
+    print(list(ctx.obj['tokens'].all()))
