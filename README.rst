@@ -28,7 +28,38 @@ pypi-client
      :alt: Requirements Status
 
 
-Pypi Warehoise API client
+Manage your Pypi warehouse account from console or using a awesome Python API. For example use the command line to
+create an upload token for an app:
+
+.. code-block:: shell
+
+    $ pypi-client tokens create "Token name" my-project
+
+Use this command with other programs. For example you can use it together with Travis:
+
+.. code-block:: shell
+
+    $ travis encrypt $(pypi-client tokens create "Token name" my-project)
+
+Create a token from Python:
+
+.. code-block:: python
+
+    from pypi_client.session import PypiSession, get_pypirc_login
+    from pypi_client.client import PypiClient
+    from pypi_client.exceptions import PypiTwoFactorRequired
+
+    session = PypiSession(*get_pypirc_login())  # get username/password from pypirc
+    # Optional: use session.restore_session() instead session.login()
+    try:
+        session.login()
+    except PypiTwoFactorRequired:
+        session.two_factor(input('Insert TOTP: '))
+    # Optional: use session.save_session()
+
+    client = PypiClient(session)
+    token = client.tokens.create('Token name', 'my-project')
+    print(f'{token.token_id}: {token.token}')
 
 
 To install pypi-client, run this command in your terminal:

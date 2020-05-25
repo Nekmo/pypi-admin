@@ -13,7 +13,7 @@ from pypi_client.events import events_cli
 from pypi_client.exceptions import PypiTwoFactorRequired, PypiKeyringError
 from pypi_client.projects import projects_cli
 from pypi_client.releases import releases_cli
-from pypi_client.session import PypiSession, get_pypi_login
+from pypi_client.session import PypiSession, get_pypirc_login
 from pypi_client.tokens import tokens_cli
 
 
@@ -25,7 +25,7 @@ def get_credentials(username: str, password: str, config_file: str):
     if not username and not password:
         username, password = os.environ.get(ENV_USERNAME_KEY), os.environ.get(ENV_PASSWORD_KEY)
     if not username or not password:
-        username, password = get_pypi_login(config_file)
+        username, password = get_pypirc_login(config_file)
     if not username or not password:
         raise ClickException(
             'Pypi login is required. Credentials are obtained from one of:\n'

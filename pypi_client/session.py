@@ -24,7 +24,7 @@ def get_config(path: str = "~/.pypirc"):
         return parser
 
 
-def get_pypi_login(path: str = "~/.pypirc") -> Union[Tuple[None, None], Tuple[str, str]]:
+def get_pypirc_login(path: str = "~/.pypirc") -> Union[Tuple[None, None], Tuple[str, str]]:
     config = get_config(path)
     if config is None:
         return None, None

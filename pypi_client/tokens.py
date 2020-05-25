@@ -42,13 +42,12 @@ class Tokens:
             yield Token(self, name, token_id, created)
 
     def get(self, name_or_id: str) -> Token:
-        tokens = self.all()
+        tokens = list(self.all())
         try:
             return self.get_by_token_id(name_or_id, tokens)
         except PypiTokenUnavailable:
             pass
         return self.get_by_name(name_or_id)
-
 
     def get_by_name(self, name: str, tokens: Union[Iterable[Token], None] = None) -> Token:
         tokens = tokens or self.all()
