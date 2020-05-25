@@ -1,7 +1,7 @@
-###########
-pypi-client
-###########
+.. image:: https://raw.githubusercontent.com/Nekmo/pypi-client/master/logo.png
+    :width: 100%
 
+|
 
 .. image:: https://img.shields.io/travis/Nekmo/pypi-client.svg?style=flat-square&maxAge=2592000
   :target: https://travis-ci.org/Nekmo/pypi-client
@@ -27,6 +27,10 @@ pypi-client
      :target: https://requires.io/github/Nekmo/pypi-client/requirements/?branch=master
      :alt: Requirements Status
 
+
+###########
+pypi-client
+###########
 
 Manage your Pypi warehouse account from console or using a awesome Python API. For example use the command line to
 create an upload token for an app:
