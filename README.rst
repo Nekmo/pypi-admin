@@ -71,8 +71,12 @@ To install pypi-client, run this command in your terminal:
 This is the preferred method to install pypi-client, as it will always install the most recent stable release.
 
 
-Features
-========
+Current features
+================
 
-* TODO
+* List, create or delete **tokens**. Get help using ``pypi-client tokens --help``.
+* List project **collaborators**.  Use ``pypi-client collaborators <project name> all``.
+* List project **history** (events).  Use ``pypi-client events <project name> all``.
+* List project **releases**.  Use ``pypi-client releases <project name> all``.
+* List **projects**.  Use ``pypi-client projects``.
 
