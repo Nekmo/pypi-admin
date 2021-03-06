@@ -1,7 +1,7 @@
 import click
 from click_default_group import DefaultGroup
 
-from pypi_client.table import Table
+from pypi_admin.table import Table
 
 
 class Release:

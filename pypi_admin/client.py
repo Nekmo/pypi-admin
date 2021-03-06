@@ -1,5 +1,5 @@
-from pypi_client.session import PypiSession
-from pypi_client.tokens import Tokens
+from pypi_admin.session import PypiSession
+from pypi_admin.tokens import Tokens
 
 
 class PypiClient:

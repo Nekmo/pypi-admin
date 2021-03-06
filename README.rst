@@ -49,9 +49,9 @@ Create a token from Python:
 
 .. code-block:: python
 
-    from pypi_manage.session import PypiSession, get_pypirc_login
-    from pypi_manage.manage import PypiClient
-    from pypi_manage.exceptions import PypiTwoFactorRequired
+    from pypi_admin.session import PypiSession, get_pypirc_login
+    from pypi_admin.manage import PypiClient
+    from pypi_admin.exceptions import PypiTwoFactorRequired
 
     session = PypiSession(*get_pypirc_login())  # get username/password from pypirc
     # Optional: use session.restore_session() instead session.login()

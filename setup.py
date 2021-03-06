@@ -69,7 +69,7 @@ classifiers.extend([
 setup(
     entry_points={
         'console_scripts': [
-            'pypi-client = pypi_client:manage'
+            'pypi-admin = pypi_admin:manage'
         ],
     },
     classifiers=classifiers,

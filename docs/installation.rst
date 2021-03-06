@@ -12,7 +12,7 @@ To install pypi-client, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install pypi_client
+    $ pip install pypi_admin
 
 This is the preferred method to install pypi-client, as it will always install the most recent stable release.
 

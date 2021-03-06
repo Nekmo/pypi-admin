@@ -4,10 +4,10 @@ from typing import Iterable, Union
 import click
 from bs4 import BeautifulSoup
 
-from pypi_client.exceptions import PypiTokenUnavailable
+from pypi_admin.exceptions import PypiTokenUnavailable
 from click_default_group import DefaultGroup
 
-from pypi_client.table import Table
+from pypi_admin.table import Table
 
 
 class Token:

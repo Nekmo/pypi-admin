@@ -10,7 +10,7 @@ from keyring.errors import KeyringError
 from requests import Session, Response
 from requests.cookies import RequestsCookieJar
 
-from pypi_client.exceptions import PypiTwoFactorRequired, PypiKeyringError
+from pypi_admin.exceptions import PypiTwoFactorRequired, PypiKeyringError
 
 URL = 'https://pypi.org/'
 KEYRING_SESSION_NAME = 'pypi-client-session'

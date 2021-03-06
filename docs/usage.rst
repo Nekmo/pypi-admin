@@ -7,7 +7,7 @@ Usage
 
 To see the available help run::
 
-    $ pypi_client --help
+    $ pypi_admin --help
 
 
 Example::
@@ -17,10 +17,10 @@ Example::
 
 To see the help of a command::
 
-    $ pypi_client <command> --help
+    $ pypi_admin <command> --help
 
 For example::
 
-    $ pypi_client ...
+    $ pypi_admin ...
 
 

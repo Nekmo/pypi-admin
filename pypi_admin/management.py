@@ -8,13 +8,13 @@ import warnings
 import click
 from click import ClickException
 
-from pypi_client.collaborators import collaborators_cli
-from pypi_client.events import events_cli
-from pypi_client.exceptions import PypiTwoFactorRequired, PypiKeyringError
-from pypi_client.projects import projects_cli
-from pypi_client.releases import releases_cli
-from pypi_client.session import PypiSession, get_pypirc_login
-from pypi_client.tokens import tokens_cli
+from pypi_admin.collaborators import collaborators_cli
+from pypi_admin.events import events_cli
+from pypi_admin.exceptions import PypiTwoFactorRequired, PypiKeyringError
+from pypi_admin.projects import projects_cli
+from pypi_admin.releases import releases_cli
+from pypi_admin.session import PypiSession, get_pypirc_login
+from pypi_admin.tokens import tokens_cli
 
 
 ENV_USERNAME_KEY = 'PYPI_USERNAME'
